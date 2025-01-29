@@ -1,11 +1,12 @@
 import os
-import zipfile
-
 import numpy as np
+
 
 def new_app_install(project_name, app_name, dependency='django.contrib.staticfiles', crud=True):
     """
     새로운 앱을 생성해 추가합니다.
+    설치 하는 앱이 특정 앱 보다 나중에 설치해야 하는 경우에는 dependency 에 특정앱을 지정해주세요.
+    ex) django.contrib.staticfiles
 
     :param str project_name: 프로젝트 이름
     :param str app_name: 앱 이름
@@ -63,6 +64,7 @@ def new_app_install(project_name, app_name, dependency='django.contrib.staticfil
     with open(url_path, 'w') as f:
         f.writelines(lines)
 
+
 def generate_view_base_code_lines(model_name, app_name, crud):
     # views.py 생성
     header_lines = [
@@ -118,6 +120,11 @@ def generate_view_base_code_lines(model_name, app_name, crud):
         lines = header_lines + index_lines
     return lines
 
+def write_view_base_code_lines(app_path, model_name, app_name, crud):
+    with open(os.path.join(app_path, 'views.py'), 'w') as f:
+        view_lines = generate_view_base_code_lines(model_name, app_name, crud=crud)
+        f.writelines(view_lines)
+
 
 def generate_url_base_code_lines(model_name, app_name, crud):
     base_lines = ['from django.urls import path\n',
@@ -137,19 +144,51 @@ def generate_url_base_code_lines(model_name, app_name, crud):
         base_lines.pop(-2)  # delete detail
     return base_lines
 
-def generate_model_base_code_lines(model_name):
+
+def write_url_base_code_lines(appdir_path, model_name, app_name, crud):
+    with open(os.path.join(appdir_path, 'urls.py'), 'w') as f:
+        url_lines = generate_url_base_code_lines(model_name, app_name, crud=crud)
+        f.writelines(url_lines)
+
+
+def generate_model_base_code_lines(model_name, **kwargs):
     """
 
-    :param app_name:
     :param model_name:
-    :param crud:
     :return:
     """
     base_lines = ["from django.db import models\n",
-                  "class {}(models.Model):\n".format(model_name),
-                  "\tname = models.CharField(max_length=100)\n",
-                  "\tdesc = models.TextField(null=True, blank=True)\n", ]
+                  "class {}(models.Model):\n".format(model_name)]
+    if kwargs:
+        for key, value in kwargs.items():
+            base_lines.append("\t{} = {}".format(key, value))
+    else:
+        base_lines += ["\tname = models.CharField(max_length=100)\n",
+                       "\tdesc = models.TextField(null=True, blank=True)\n"]
+
+        return base_lines
+
+
+def generate_model_base_code_lines_with_df(model_name, df):
+    """
+    :param str model_name:
+    :param DataFrame df:
+    :return:
+    """
+    base_lines = ["from django.db import models\n",
+                  "class {}(models.Model):\n".format(model_name)]
+
+    # dataFrame parsing
+    for index, row in df.iterrows():
+        code = '\t{} = models.{}({})\n'.format(row['name'], row['type'], row['option'])
+        base_lines.append(code)
     return base_lines
+
+
+def write_model_base_code_lines_with_df(app_path, model_name, df):
+    with open(os.path.join(app_path, 'models.py'), 'w') as f:
+        model_lines = generate_model_base_code_lines_with_df(model_name, df)
+        f.writelines(model_lines)
 
 def generate_form_base_code(model_name, form_name, include_header=True):
     base_form_header_lines = ['from helper import apply_widget_by_field, get_all_field_info\n',
@@ -176,13 +215,15 @@ def generate_form_base_code(model_name, form_name, include_header=True):
 
                             '\tdef save(self, commit=True, **form_additional_info):\n'
                             '\t\t# 폼 저장 영역\n'
-                            "\t\tinstance = super({}{}Form, self).save(commit=commit)\n".format(model_name, form_name),
+                            "\t\tinstance = super({}{}Form, self).save(commit=commit)\n".format(model_name,
+                                                                                                form_name),
                             "\t\treturn instance\n".format(model_name, form_name),
                             ]
     if include_header:
         return base_form_header_lines + base_form_body_lines
     else:
         return base_form_body_lines
+
 
 def generate_form_base_code_lines(model_name, app_name, crud):
     index_form_code = generate_form_base_code(model_name, 'Index', True)  # IndexForm 생성
@@ -196,11 +237,53 @@ def generate_form_base_code_lines(model_name, app_name, crud):
     return form_code
 
 
+def write_form_base_code_lines(appdir_path, model_name, app_name, crud=True):
+    with open(os.path.join(appdir_path, 'forms.py'), 'w') as f:
+        form_lines = generate_form_base_code_lines(model_name, app_name, crud=crud)
+        f.writelines(form_lines)
+
 def search(lines, str_):
     mask = [str_ in line for line in lines]
     index = list(np.where(mask)[0])
     return index
 
 
+def write_settings_base_code_lines(project_dir, project_name,  app_name, dependency):
+    """
+    settings.py 파일에 아래 단계를 수행합니다.
+    1. app 추가
+    2. app url 등록
+    :param project_name:
+    :param app_name:
+    :param dependency:
+    :return:
+    """
+
+    setting_path = os.path.join(project_dir, project_name, 'settings.py')
+    with open(setting_path, 'r') as f:
+        # settings.py 에 추가할 내용
+        lines = f.readlines()
+
+        # app 추가, dependency 코드 아래에 추가합니다. app 코드를 추가합니다.
+        index = search(lines, "{}".format(dependency))[0]
+        if index:
+            lines[index] = lines[index] + "'{}' ,\n".format(app_name)
+        else:
+            raise ValueError('적절한 dependency 코드를 찾지 못하였습니다. \n적절한 코드를 임력해주세요. ex)django.contrib.staticfiles')
+            # 문자열 저장
+
+    with open(setting_path, 'w') as f:
+        f.writelines(lines)
+
+    # urls.py 문자열 추가
+    url_path = os.path.join(project_dir, project_name, 'urls.py')
+    with open(url_path, 'r') as f:
+        lines = f.readlines()
+        index = search(lines, "path('admin/', admin.site.urls),")[0]
+        lines.insert(index + 1, "path('{}/', include('{}.urls'), name='{}'),\n".format(app_name, app_name, app_name))
+    with open(url_path, 'w') as f:
+        f.writelines(lines)
+
+
 if __name__ == '__main__':
-    new_app_install('initializer', 'proj')
+    new_app_install('initializer', 'basicapp')

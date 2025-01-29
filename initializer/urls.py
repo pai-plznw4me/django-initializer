@@ -20,12 +20,15 @@ from django.urls import path
 from django.urls import path, include  # <-- 추가된 코드
 from django.conf.urls.static import static # <-- 추가된 코드
 from initializer import settings
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('basicapp/', include('basicapp.urls'), name='basicapp'),
     path('proj/', include('proj.urls'), name='proj'),
     path('account/', include('account.urls'), name='account'),  # <-- 추가된 코드
     path('account/', include('django.contrib.auth.urls')),  # <-- 추가된 코드
-    path('doctris_base/', include('doctris_base.urls'), name='doctris_base'),
+    path('', include('doctris_base.urls'), name='doctris_base'),
+    path('', RedirectView.as_view(url='/home', permanent=False))
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # <-- 추가된 코드

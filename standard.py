@@ -11,7 +11,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from copy import deepcopy
-from helper import get_base_url, add_content
+from helper import get_base_url, add_content, card_row
 
 
 def standard_index(request, form_class, form_additional_info, model_filter, url_path, base, generate_modelform_table,
@@ -45,6 +45,7 @@ def standard_index(request, form_class, form_additional_info, model_filter, url_
     if not model_filter:
         model_filter = {}
 
+
     # model instance 정보을 가져옵니다.
     added_contents = []
     model = form_class.Meta.model
@@ -57,6 +58,8 @@ def standard_index(request, form_class, form_additional_info, model_filter, url_
     # crud standard table
     modelform_table_html = generate_modelform_table(base_url, model_instances, form_class, form_additional_info,
                                                     url_path, **kwargs)
+    
+    modelform_table_html = card_row((modelform_table_html, 12))
     added_contents.append(modelform_table_html)
 
     # callback

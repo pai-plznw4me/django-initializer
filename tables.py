@@ -8,8 +8,9 @@ Description: 모든 앱에 공통적으로 사용되는 유틸 또는 헬퍼 fun
 
 import os
 import pandas as pd
+from pandas.plotting import table
 
-from helper import append_onclick_button, generate_url, create_button, wrap_with_tag
+from helper import append_onclick_button, generate_url, create_button, wrap_with_tag, apply_datatable
 
 
 def generate_crud_table(base_url, objects, field_names, url_path, **kwargs):
@@ -375,15 +376,22 @@ def crud_formtable(base_url, objects, form_class, form_additional_info, url_path
 
     # df -> html
     table_id = kwargs.pop('table_id', [])
+    table_classes = kwargs.pop('table_classes', ())
     if table_id:
-        table_html = object_df.to_html(escape=False, table_id=table_id)
+        table_html = object_df.to_html(escape=False, table_id=table_id, classes=table_classes)
     else:
         table_html = object_df.to_html(escape=False)
 
     # create button
     url = generate_url(base_url, os.path.join(url_path) + 'create')
     button_tag = create_button(url, 'create')
-    crud_table = button_tag + table_html
+
+    # p tag 을 넣어서 button 과 table 을
+    crud_table = button_tag + '<p></p>' + table_html
+
+    # apply datatable
+    if table_id:
+        crud_table += apply_datatable(table_id)
 
     return crud_table
 

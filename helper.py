@@ -473,8 +473,21 @@ def apply_datatable(table_id):
      :return: DataTable을 적용하는 스크립트
      :rtype: str
      """
-    return "<script>var {} = $('#{}').DataTable( {{'scrollY':'200px', 'scrollCollapse':true }});</script>".format(
-        table_id, table_id)
+    # check sentence, DataTable 이 로드 되었는지 확인합니다.
+    # 검증이 필요할때 아래 코드를 사용합니다.
+    # ex return valid_sentence+sentence
+    valid_sentence = """<script>
+    if (typeof $.fn.dataTable === 'function') {
+    console.log('DataTable script is loaded');
+    } else {
+    console.log('DataTable script is NOT loaded');
+    }
+    </script>
+    """
+
+
+    sentence = "<script> var {} = $('#{}').DataTable({{autoWidth: false}}); </script>".format(table_id, table_id)
+    return sentence
 
 
 def wrapping_card(title_name, content):
@@ -489,5 +502,3 @@ def wrapping_card(title_name, content):
     wrapped_content = title + card_row(
         (content, 12))  # added_contents 내 첫번째 요소 : detail_content
     return wrapped_content
-
-

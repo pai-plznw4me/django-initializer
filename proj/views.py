@@ -17,9 +17,13 @@ base = 'doctris'
 
 def index(request):
     def _callback(**kwargs):
-        pass;
 
-    return standard_index(request, ProjIndexForm, {}, None, 'proj/', base, crud_formtable, None)
+        header_html = '<div class="p-4 border-bottom"><h3 class="mb-0">프로젝트 목록</h3></div>'
+        header_html = card_row((header_html, 12))
+        kwargs['added_contents'].insert(0, header_html)
+
+
+    return standard_index(request, ProjIndexForm, {}, None, 'proj/', base, crud_formtable, _callback, table_id='proj_index', table_classes=('cell-border'))
 
 
 def create(request):

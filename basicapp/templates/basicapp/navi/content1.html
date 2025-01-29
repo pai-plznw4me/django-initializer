@@ -1,0 +1,8 @@
+<div class="tab-pane fade active show" id="app-meta" role="tabpanel"
+     aria-labelledby="app-meta-tab">
+    <form method="post">
+        {% for field in form %}
+            <p>{{ field.label }} : {{ field }}</p>
+        {% endfor %}
+    </form>
+</div><!--end teb pane-->

@@ -1,0 +1,31 @@
+﻿fieldtype,description,option
+CharField,짧은 문자열을 저장 (최대 길이 지정),max_length (필수)
+TextField,긴 텍스트를 저장,
+IntegerField,정수 값을 저장,
+FloatField,부동소수점 숫자 저장,
+DecimalField,고정 소수점 숫자 저장 (정밀도가 중요한 값),"max_digits, decimal_places"
+PositiveIntegerField,양의 정수 값만 저장,
+PositiveSmallIntegerField,양의 작은 정수 값만 저장,
+SmallIntegerField,작은 정수 값 저장,
+BigIntegerField,큰 정수 값 저장,
+DateField,날짜 값을 저장 (형식: YYYY-MM-DD),"auto_now, auto_now_add"
+TimeField,시간 값을 저장 (형식: HH:MM:SS),
+DateTimeField,날짜와 시간을 저장 (형식: YYYY-MM-DD HH:MM:SS),"auto_now, auto_now_add"
+DurationField,시간 차이를 저장 (예: 이벤트 기간),
+BooleanField,True 또는 False 값을 저장,
+NullBooleanField (deprecated),"True, False, 또는 None (null) 값을 저장",
+ChoiceField,"선택할 수 있는 옵션을 정의 (예: 성별, 상태 등)",choices (튜플로 옵션들 정의)
+ForeignKey,다른 모델과의 1:N 관계,on_delete (삭제 시 동작)
+OneToOneField,다른 모델과의 1:1 관계,on_delete (삭제 시 동작)
+ManyToManyField,다대다(M:N) 관계,
+FileField,파일을 저장 (일반 파일),upload_to (파일 업로드 디렉토리)
+ImageField,이미지를 저장 (파일 필드의 하위 클래스),upload_to (이미지 업로드 디렉토리)
+EmailField,이메일 주소 저장,
+URLField,URL 주소 저장,
+SlugField,"URL 친화적인 문자열 저장 (예: ""my-first-post""와 같은 슬러그)",
+UUIDField,고유한 UUID 값을 저장,
+IPAddressField,IP 주소 저장,
+GenericIPAddressField,"IPv4, IPv6 주소 저장",
+JSONField,JSON 형식으로 데이터를 저장,
+ArrayField,PostgreSQL 배열 필드 (배열 데이터 저장),
+HStoreField,PostgreSQL 키-값 쌍 데이터 저장,

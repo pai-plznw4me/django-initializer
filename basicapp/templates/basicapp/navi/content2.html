@@ -1,0 +1,26 @@
+<div class="tab-pane fade" id="app-model" role="tabpanel" aria-labelledby="app-model-tab">
+    <p>
+    <div class="col-3">
+        <label class="form-label"> DB table name : </label>
+        <input type="text" class="form-control" name="db_table_name">
+    </div>
+    </p>
+    <table id="example" class="display">
+        <thead>
+        <tr>
+            <th><input type="checkbox" id="select_all"></th>
+            <th>필드 이름</th>
+            <th>필드 타입</th>
+            <th>필드 옵션</th>
+        </tr>
+        </thead>
+    </table>
+
+    {# datatable 의 정보를 저장하기 위한 form 을 생성합니다. #}
+    <input type="hidden" name="datatable_data" id="datatable_data">
+
+    {# 행 추가 및 행 제거 열 #}
+    <button type='button' id="add-row" class="btn btn-primary">+ 행 추가</button>
+    <button type='button' id="delete-row" class="btn btn-danger">- 행 제거</button>
+</div><!--end teb pane-->
+

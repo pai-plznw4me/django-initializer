@@ -1,6 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+{% load index %}
 {% load static %}
+
+<html lang="en">
+
+
 <head>
     <meta charset="utf-8"/>
     <title>MARP</title>
@@ -31,6 +34,29 @@
 </head>
 
 <body>
+<!-- jquery -->
+<script src="{% static 'doctris_base/js/jquery.min.js' %}"></script>
+<!-- bootstrap -->
+<script src="{% static 'doctris_base/js/bootstrap.bundle.min.js' %}" ></script>
+<!-- simplebar -->
+<script src="{% static 'doctris_base/js/simplebar.min.js' %}" ></script>
+<!-- Select2 -->
+<script src="{% static 'doctris_base/js/select2.min.js' %}"  ></script>
+<!-- select2 -->
+<script src="{% static 'doctris_base/js/select2.init.js' %}"  ></script>
+<!-- Icons -->
+<script src="{% static 'doctris_base/js/feather.min.js' %}" ></script>
+<!-- Datatable Js -->
+<script src="{% static 'doctris_base/js/jquery.dataTables.js' %}"></script>
+{#<script src="https://cdn.datatables.net/2.2.1/js/dataTables.js" ></script>#}
+{#<!-- global Js -->#}
+<script src="{% static 'doctris_base/js/global.js' %}" ></script>
+<!-- Chart Js -->
+<script src="{% static 'doctris_base/js/chart.js' %}" ></script>
+<!-- Main Js -->
+<script src="{% static 'doctris_base/js/app.js' %}" ></script>
+
+
 <div id="preloader" style="visibility: hidden; opacity: 0;">
     <div id="status">
         <div class="spinner">
@@ -63,27 +89,9 @@
 
 </div>
 
-<!-- jquery -->
-<script src="{% static 'doctris_base/js/jquery.min.js' %}"></script>
-<!-- bootstrap -->
-<script src="{% static 'doctris_base/js/bootstrap.bundle.min.js' %}"></script>
-<!-- simplebar -->
-<script src="{% static 'doctris_base/js/simplebar.min.js' %}"></script>
-<!-- Select2 -->
-<script src="{% static 'doctris_base/js/select2.min.js' %}"></script>
-<!-- select2 -->
-<script src="{% static 'doctris_base/js/select2.init.js' %}"></script>
-<!-- Icons -->
-<script src="{% static 'doctris_base/js/feather.min.js' %}"></script>
-<!-- Main Js -->
-<script src="{% static 'doctris_base/js/app.js' %}"></script>
-<!-- Datatable Js -->
-<script src="{% static 'doctris_base/js/jquery.dataTables.js' %}"></script>
-<!-- global Js -->
-<script src="{% static 'doctris_base/js/global.js' %}"></script>
-<!-- Chart Js -->
-<script src="{% static 'doctris_base/js/chart.js' %}"></script>
+
 {% block js %}
 {% endblock %}
+
 </body>
 </html>

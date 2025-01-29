@@ -1,0 +1,68 @@
+{% load static %}
+{% include 'basicapp/navi/index.html' %}
+
+
+<script >
+    $(document).ready(function () {
+        var table = $('#example').DataTable({
+            autoWidth: false
+        })
+
+
+        // 행 추가시 행 추가
+        $('#add-row').click(function () {
+            var newRowData = [
+                '<input type="checkbox" class="rowCheckbox">',
+                '<input class="form-control" type="text">',  // 이름
+                '<select class="form-select"><option value="CharField">CharField (문자열 필드)</option><option value="TextField">TextField (긴 문자열 필드)</option><option value="IntegerField">IntegerField (정수형 필드)</option><option value="FloatField">FloatField (실수형 필드)</option><option value="DecimalField">DecimalField (소수점 필드)</option><option value="PositiveIntegerField">PositiveIntegerField (양의 정수 필드)</option><option value="PositiveSmallIntegerField">PositiveSmallIntegerField (양의 작은 정수 필드)</option><option value="SmallIntegerField">SmallIntegerField (작은 정수 필드)</option><option value="BigIntegerField">BigIntegerField (큰 정수 필드)</option><option value="DateField">DateField (날짜 필드)</option><option value="TimeField">TimeField (시간 필드)</option><option value="DateTimeField">DateTimeField (날짜와 시간 필드)</option><option value="DurationField">DurationField (시간 간격 필드)</option><option value="BooleanField">BooleanField (참/거짓 값 필드)</option><option value="NullBooleanField">NullBooleanField (deprecated) (null을 허용하는 불리언 필드)</option><option value="ChoiceField">ChoiceField (선택 필드)</option><option value="ForeignKey">ForeignKey (외래 키 필드)</option><option value="OneToOneField">OneToOneField (1:1 관계 필드)</option><option value="ManyToManyField">ManyToManyField (다대다 관계 필드)</option><option value="FileField">FileField (파일 업로드 필드)</option><option value="ImageField">ImageField (이미지 업로드 필드)</option><option value="EmailField">EmailField (이메일 필드)</option><option value="URLField">URLField (URL 필드)</option><option value="SlugField">SlugField (URL-friendly 문자열 필드)</option><option value="UUIDField">UUIDField (UUID 필드)</option><option value="IPAddressField">IPAddressField (IP 주소 필드)</option><option value="GenericIPAddressField">GenericIPAddressField (IPv4/IPv6 주소 필드)</option><option value="JSONField">JSONField (JSON 데이터 필드)</option><option value="ArrayField">ArrayField (배열 필드)</option><option value="HStoreField">HStoreField (key-value 쌍을 저장하는 필드)</option></select>',       // 타입
+                '<input class="form-control" type="text">'  // 옵션
+            ];
+
+            // DataTable에 새로운 행 추가
+            table.row.add(newRowData).draw();
+        });
+
+        // 전체 선택 옵션
+        $('#select_all').click(function () {
+            const selectAllCheckbox = document.getElementById("select_all");
+            const checkboxes = document.querySelectorAll(".rowCheckbox");
+            console.log(checkboxes)
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        });
+
+        // 선택된 행 제거
+        $('#delete-row').click(function toggleRowSelection() {
+            var confirm_delete = window.confirm('정말로 선택된 행을 삭제하시겠습니까?');
+            if (confirm_delete) {
+                $('#example tbody tr').each(function () {
+                    var checkbox = $(this).find('.rowCheckbox');
+                    var row = table.row($(this));
+                    if (checkbox.prop('checked')) {
+                        row.remove('selected').draw();
+                    }
+                });
+            }
+        });
+
+        // 전송 버튼 누를시 작동되도록함
+        let table_array = [];
+        $('#submit_all').on('click', function () {
+            $('#example tbody tr').each(function () {
+                {# data table 내 모든 input field 의 value 을 구해 array 로 저장함#}
+                var name = $(this).find('td').eq(1).find('input').val()
+                var type = $(this).find('td').eq(2).find('select').val()
+                var option = $(this).find('td').eq(3).find('input').val()
+                table_array.push({
+                    'name': name,
+                    'type': type,
+                    'option': option
+                })
+            })
+            $('#datatable_data').val(JSON.stringify(table_array));
+            $('#navitap').submit()
+        });
+
+    });
+</script>
