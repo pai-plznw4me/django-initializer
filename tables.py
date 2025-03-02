@@ -1,8 +1,8 @@
 """
 File: tables.py
 Author: 김성중
-Version: 1.4
-Date: 2024-02-24
+Version: 1.5
+Date: 2025-03-01
 Description: 모든 앱에 공통적으로 사용되는 유틸 또는 헬퍼 func 들을 정의해 놓음.
 """
 
@@ -332,8 +332,7 @@ def crud_formtable(base_url, objects, form_class, form_additional_info, url_path
     # form instance 생성
     form_inst = form_class()
 
-    table_columns = form_inst.verbose_names + ['상세', '업데이트', '제거']
-
+    table_columns = form_inst.verbose_names
     # 모델 인스턴스 => DataFrame
     if objects:  # 테이블 내 instance 존재 시 아래 코드 수행
         object_df = pd.DataFrame.from_records(objects.values()).loc[:, form_class.Meta.fields_with_id]
@@ -342,6 +341,9 @@ def crud_formtable(base_url, objects, form_class, form_additional_info, url_path
         if form_additional_info:
             for key, value in form_additional_info.items():
                 object_df[key] = value
+                table_columns.append(key)
+
+        table_columns = table_columns + ['상세', '업데이트', '제거']
 
         # detail button (read)
         append_onclick_button('detail', object_df, os.path.join(base_url, url_path) + 'detail', )

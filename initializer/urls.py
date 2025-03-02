@@ -25,6 +25,7 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('basicapp/', include('basicapp.urls'), name='basicapp'),
+    path('basicauth/', include('basicauth.urls'), name='basicauth'),
     path('proj/', include('proj.urls'), name='proj'),
     path('account/', include('account.urls'), name='account'),  # <-- 추가된 코드
     path('account/', include('django.contrib.auth.urls')),  # <-- 추가된 코드

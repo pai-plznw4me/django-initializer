@@ -35,8 +35,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-'basicapp' ,
-    'proj' ,
+    'basicapp',
+    'basicauth',
+    'proj',
     'account',
     'doctris_base',
 ]
