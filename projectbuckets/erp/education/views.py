@@ -19,7 +19,11 @@ def index(request):
     def _callback(**kwargs):
         pass;
 
-    return standard_index(request, EducationIndexForm, {}, None, 'education/', base, crud_formtable, None,
+    departments =[ ]
+    for edu in  Education.objects.all():
+        departments.append(edu.employee.department)
+    form_additional_info = {'부서' : departments}
+    return standard_index(request, EducationIndexForm, form_additional_info, None, 'education/', base, crud_formtable, None,
                           table_id='edu_index_table', table_classes=('cell-border'))
 
 
@@ -58,7 +62,7 @@ def sync(request):
     df = df.iloc[:39]
     # change verbose name to full name
     mapepr = {b: a for (a, b) in Education.LEVEL_CHOICES}
-    df.loc[:, '최종 학력'] = df.loc[:, '최종 학력'].replace(mapepr)
+    # df.loc[:, '최종 학력'] = df.loc[:, '최종 학력'].replace(mapepr)
 
     for index, row in df.iterrows():
         acquisition = row.loc['최종 취득일']
