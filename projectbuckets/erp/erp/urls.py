@@ -1,6 +1,7 @@
 from django.urls import include
 from django.conf.urls.static import static
 from erp import settings
+
 """
 URL configuration for erp project.
 
@@ -18,17 +19,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include 
-from django.conf.urls.static import static 
+from django.urls import include
+from django.conf.urls.static import static
 from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-path('employee/', include('employee.urls'), name='employee'),
-path('education/', include('education.urls'), name='education'),
-path('history/', include('history.urls'), name='history'),
-path('account/', include('account.urls'), name='account'),
-path('account/', include('django.contrib.auth.urls')),
-path('doctris_base/', include('doctris_base.urls'), name='doctris_base'),
+    path('project/', include('project.urls'), name='project'),
+    path('employee/', include('employee.urls'), name='employee'),
+    path('education/', include('education.urls'), name='education'),
+    path('history/', include('history.urls'), name='history'),
+    path('account/', include('account.urls'), name='account'),
+    path('account/', include('django.contrib.auth.urls')),
+    path('doctris_base/', include('doctris_base.urls'), name='doctris_base'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
