@@ -30,7 +30,7 @@ def index(request):
 		header_html = card_row((header_html, 12))
 		kwargs['added_contents'].insert(0, header_html)
 
-	return standard_index(request, BasicauthIndexForm, {}, None, 'basicauth/', 'doctris', crud_formtable, _callback,table_id='basicauth_index_table', table_classes=('cell-border'))
+	return standard_index(request, BasicauthIndexForm, {}, None, 'basicauth/', 'doctris', crud_formtable, _callback, table_id='basicauth_index_table', table_classes=('cell-border'))
 
 def create(request):
 
