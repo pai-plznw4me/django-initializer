@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from employee.forms import EmployeeIndexForm
 from employee.forms import EmployeeCreateForm, EmployeeUpdateForm, EmployeeDetailForm
 from employee.models import Employee
-from helper import h_tag, card_row, base_form_detail
+from helper import card_row, base_form_detail
 from standard import standard_index, standard_detail, standard_create, standard_update, standard_delete
 from tables import crud_formtable
 from datetime import datetime
@@ -59,8 +59,14 @@ def index(request):
     assert len(employees) == len(period_dates)
     form_additional_info['현재 경력'] = now_dates
 
+    def _callback(**kwargs):
+        # 표 위에 헤더 정보 입니다.
+        header_html = '<div class="p-2 border-bottom"><h3 class="mb-0">임직원 리스트</h3><p>직원리스트를 보여줍니다.</p></div>'
+        header_html = card_row((header_html, 12))
+        kwargs['added_contents'].insert(0, header_html)
+
     return standard_index(request, EmployeeIndexForm, form_additional_info, None, 'employee/', base, crud_formtable,
-                          None, table_id='employee_index_table', table_classes=('cell-border'))
+                          _callback, table_id='employee_index_table', table_classes=('cell-border'))
 
 
 def create(request):

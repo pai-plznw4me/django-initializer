@@ -17,14 +17,16 @@ base = 'doctris'
 
 def index(request):
     def _callback(**kwargs):
-        pass;
+        header_html = '<div class="p-2 border-bottom"><h3 class="mb-0">직원 학력 정보</h3><p>직원 학력정보를 제공합니다.</p></div>'
+        header_html = card_row((header_html, 12))
+        kwargs['added_contents'].insert(0, header_html)
 
-    departments =[ ]
-    for edu in  Education.objects.all():
+    departments = []
+    for edu in Education.objects.all():
         departments.append(edu.employee.department)
-    form_additional_info = {'부서' : departments}
-    return standard_index(request, EducationIndexForm, form_additional_info, None, 'education/', base, crud_formtable, None,
-                          table_id='edu_index_table', table_classes=('cell-border'))
+    form_additional_info = {'부서': departments}
+    return standard_index(request, EducationIndexForm, form_additional_info, None, 'education/', base, crud_formtable,
+                          _callback, table_id='employee_index_table', table_classes=('cell-border'))
 
 
 def create(request):
