@@ -484,9 +484,29 @@ def apply_datatable(table_id):
     }
     </script>
     """
-
-
-    sentence = "<script> var {} = $('#{}').DataTable({{autoWidth: false}}); </script>".format(table_id, table_id)
+    # <!-orderable false 인 column 에 sorting arrow 을 보여주지 않는다. ->
+    sentence = """
+    <script> var {} = new DataTable('#{}', {{
+        autoWidth: false,
+        order: false,  
+        "columnDefs": [
+        {{"orderable": false, "targets": 0 }}]
+    }});
+    $('#select_all').click(function () {{\n
+        const selectAllCheckbox = document.getElementById("select_all");\n
+        const checkboxes = document.querySelectorAll(".rowCheckbox");\n
+        console.log(checkboxes);\n
+        checkboxes.forEach(checkbox => {{\n
+        checkbox.checked = selectAllCheckbox.checked;\n
+        }});\n
+    }});\n
+    </script>
+    
+    
+    
+    """.format(table_id, table_id)
+    sentence = sentence.replace('\n', '')
+    # sentence = "<script> var {} = $('#{}').DataTable({{autoWidth: false, columnDefs:[{}]}}); </script>".format(table_id, table_id)
     return sentence
 
 

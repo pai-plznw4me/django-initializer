@@ -52,6 +52,11 @@ def delete_all(request):
     Project.objects.all().delete()
     return HttpResponse(200)
 
+def download(request):
+    Project.objects.all().delete()
+    return HttpResponse(200)
+
+
 
 def sync(request):
     filepath = './project/static/project/계약서리스트.xlsx'

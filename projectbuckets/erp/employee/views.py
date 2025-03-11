@@ -1,15 +1,20 @@
+import os
+
 import pandas as pd
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 
 from employee.forms import EmployeeIndexForm
 from employee.forms import EmployeeCreateForm, EmployeeUpdateForm, EmployeeDetailForm
+from employee.helper import generate_edu_info, generate_history_info, remove_invalid_characters
 from employee.models import Employee
 from helper import card_row, base_form_detail
 from standard import standard_index, standard_detail, standard_create, standard_update, standard_delete
-from tables import crud_formtable
+from tables import crud_formtable, generate_crud_df
 from datetime import datetime
 
 base = 'doctris'
+
+
 
 
 def index(request):
@@ -19,45 +24,12 @@ def index(request):
     # 각 직원 별 최종 학교 정보를 가져와 학교 이름, 학과, 학위, 취득일 정보를 employee 표 옆에 붙임
     # ⚠️ [0] 을 붙이는 이유는 최종 학력은 개인당 단 하나만 있음을 가정함
     # TODO: 이 행위를 하기보다는 최종학력을 저장하는게 좋을것 같다.
+
     employees = Employee.objects.all()
-    final_educations = [
-        employee.education_set.filter(final=True)[0] if employee.education_set.filter(final=True) else None for employee
-        in employees]
-    final_edu_names = []
-    final_edu_level = []
-    final_edu_department = []
-    final_edu_acquisition = []
-    for final_education in final_educations:
-        if final_education:
-            name, level, department, acquisition = final_education.name, final_education.level, final_education.department, final_education.acquisition
-        else:
-            name, level, department, acquisition = None, None, None, None
-
-        final_edu_names.append(name)
-        final_edu_level.append(level)
-        final_edu_department.append(department)
-        final_edu_acquisition.append(acquisition)
-    form_additional_info = {'최종 학교': final_edu_names, '최종 학과': final_edu_department, '최종 학위': final_edu_level,
-                            '최종 취득일': final_edu_acquisition}
-
-    # 기존 경력과 현재 경력을 취합합니다.
-    history_bucket = [employee.history_set.all() for employee in employees]
-    period_dates = []
-    for historys in history_bucket:
-        period_date = 0
-        for history in historys:
-            join_date = history.join
-            quit_date = history.quit
-            period_date += (quit_date - join_date).days
-        period_dates.append(period_date)
-    form_additional_info['과거 경력'] = period_dates
-
-    # 현재 경력을 취합합니다.
-    now_dates = [
-        (employee.quit - employee.join).days if employee.quit else (datetime.today().date() - employee.join).days for
-        employee in employees]
-    assert len(employees) == len(period_dates)
-    form_additional_info['현재 경력'] = now_dates
+    # 직웝별 학력 정보를 생성해 반환합니다.
+    edu_info = generate_edu_info(employees)
+    history_info = generate_history_info(employees)
+    form_additional_info = {**edu_info, **history_info}
 
     def _callback(**kwargs):
         # 표 위에 헤더 정보 입니다.
@@ -153,4 +125,26 @@ def sync(request):
         employee = Employee(name=name, identification=identification, join=join, address=address, phone=phone,
                             state=state, rank=rank, role=role, resident_no=resident_no, department=department, type=type)
         employee.save()
+    return HttpResponse(200)
+
+def download(request):
+    employees = Employee.objects.all()
+    edu_info = generate_edu_info(employees)
+    history_info = generate_history_info(employees)
+    form_additional_info = {**edu_info, **history_info}
+
+    form_class = EmployeeIndexForm
+    form_inst = form_class()
+    object_df = generate_crud_df(employees, form_inst, form_additional_info)
+    dst_dir = './employee/static/employee'
+    filename = '{}.csv'.format('objects')
+    dst_path = os.path.join(dst_dir, filename)
+    encoding = 'euc-kr'
+    # 파일을 저장합니다.
+    object_df.to_csv(dst_path, index=False, encoding=encoding, errors='ignore')
+
+
+
+    return FileResponse(open(dst_path, 'rb'), as_attachment=True, filename=filename)
+
     return HttpResponse(200)
