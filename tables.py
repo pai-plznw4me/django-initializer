@@ -1,15 +1,13 @@
 """
 File: tables.py
 Author: 김성중
-Version: 1.5
-Date: 2025-03-01
+Version: 1.6
+Date: 2025-03-11
 Description: 모든 앱에 공통적으로 사용되는 유틸 또는 헬퍼 func 들을 정의해 놓음.
 """
 
 import os
 import pandas as pd
-from pandas.plotting import table
-
 from helper import append_onclick_button, generate_url, create_button, wrap_with_tag, apply_datatable
 
 
@@ -317,6 +315,41 @@ def gantt_crud_formtable_with_variable(base_url, objects, form_class, form_addit
     return crud_table
 
 
+def generate_crud_df(objects, form_inst, form_additional_info):
+    """
+    Description:
+        objects 정보들을 dataframe 으로 변환합니다.
+        dataframe 으로 변환시 column 명 및 순서는 form_inst 정보를 활용합니다.
+        추가적인 column 정보가 있을시에는 form_additional_info 에다가 넣어주세요
+        (form addtitional info 는 form inst 에 정의 되어 있지 않습니다.)
+        form addtitional info 는 생성된 object_df 에 마지막에 추가됩니다.
+
+    Args:
+        objects:
+        form_inst:
+        form_additional_info:
+            ex) form_additional_info = {c : [1, 2]}
+        +---+---+   +---+---+---+
+        | a | b |   | a | b | c |
+        +---+---+   +---+---+---+
+        | 1 | 3 |-> | 1 | 3 | 5 |
+        +---+---+   +---+---+---+
+        | 2 | 4 |   | 2 | 4 | 6 |
+        +---+---+   +---+---+---+
+    Returns Dataframe:
+
+    """
+    table_columns = form_inst.verbose_names
+    # 모델 인스턴스 => DataFrame
+    object_df = pd.DataFrame.from_records(objects.values()).loc[:, form_inst.Meta.fields_with_id]
+
+    # form 에 정의된 추가 필드 정보를 DataFrame 에 추가함
+    if form_additional_info:
+        for key, value in form_additional_info.items():
+            object_df[key] = value
+            table_columns = table_columns + [key]
+    return object_df
+
 def crud_formtable(base_url, objects, form_class, form_additional_info, url_path, **kwargs):
     """
     form 정보를 기반으로 html table 을 생성해 반환합니다.
@@ -331,19 +364,16 @@ def crud_formtable(base_url, objects, form_class, form_additional_info, url_path
     """
     # form instance 생성
     form_inst = form_class()
+    if form_additional_info:
+        table_columns = form_inst.verbose_names + list(form_additional_info.keys()) + ['상세', '업데이트', '제거']
+    else :
+        table_columns = form_inst.verbose_names + ['상세', '업데이트', '제거']
 
-    table_columns = form_inst.verbose_names
     # 모델 인스턴스 => DataFrame
     if objects:  # 테이블 내 instance 존재 시 아래 코드 수행
-        object_df = pd.DataFrame.from_records(objects.values()).loc[:, form_class.Meta.fields_with_id]
 
-        # form 에 정의된 추가 필드 정보를 DataFrame 에 추가함
-        if form_additional_info:
-            for key, value in form_additional_info.items():
-                object_df[key] = value
-                table_columns.append(key)
-
-        table_columns = table_columns + ['상세', '업데이트', '제거']
+        # objects 을 dataframe 으로 변환 , form_additional_info 에 정의된 추가 필드 정보를 DataFrame 에 추가함
+        object_df = generate_crud_df(objects, form_inst, form_additional_info)
 
         # detail button (read)
         append_onclick_button('detail', object_df, os.path.join(base_url, url_path) + 'detail', )
@@ -379,17 +409,23 @@ def crud_formtable(base_url, objects, form_class, form_additional_info, url_path
     # df -> html
     table_id = kwargs.pop('table_id', [])
     table_classes = kwargs.pop('table_classes', ())
+    object_df.insert(0, '<input type="checkbox" id="select_all">', '<input type="checkbox" class="rowCheckbox">') # checkbox 삽입을 위해 빈 문자열을 집어 넣는다. datatable javascript app 에서 checkbox 을 생성한다.
     if table_id:
-        table_html = object_df.to_html(escape=False, table_id=table_id, classes=table_classes)
+        table_html = object_df.to_html(escape=False, table_id=table_id, classes=table_classes, index=False)
     else:
-        table_html = object_df.to_html(escape=False)
+        table_html = object_df.to_html(escape=False, index=False)
 
     # create button
     url = generate_url(base_url, os.path.join(url_path) + 'create')
-    button_tag = create_button(url, 'create')
+    create_button_tag = create_button(url, 'create')
 
-    # p tag 을 넣어서 button 과 table 을
-    crud_table = button_tag + '<p></p>' + table_html
+    # download button
+    url = generate_url(base_url, os.path.join(url_path) + 'download')
+    download_button_tag = create_button(url, 'download')
+
+
+    # p tag 을 넣어서 button 과 table 을 분리 시킨다
+    crud_table = create_button_tag + download_button_tag + '<p></p>' + table_html
 
     # apply datatable
     if table_id:

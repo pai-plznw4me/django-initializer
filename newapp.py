@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from soupsieve.util import lower
 
 
 def new_app_install(project_name, app_name, dependency='django.contrib.staticfiles', crud=True):
@@ -74,8 +75,9 @@ def generate_view_base_code_lines(model_name, app_name, crud):
                                                                                  model_name),
         "from {}.models import {}\n".format(app_name, model_name),
         "from helper import h_tag, card_row, base_form_detail\n",
+        "from django.http import HttpResponse, FileResponse\n",
         "from standard import standard_index, standard_detail, standard_create, standard_update, standard_delete\n",
-        "from tables import crud_formtable\n", ]
+        "from tables import crud_formtable, generate_crud_df\n", ]
 
     index_lines = [
         "\ndef index(request):\n",
@@ -109,16 +111,40 @@ def generate_view_base_code_lines(model_name, app_name, crud):
 
     delete_lines = [
         "\ndef delete(request, id):\n",
-        "\treturn standard_delete(request, id, {}, '{}:index', {{}}, None)".format(model_name, app_name)]
+        "\treturn standard_delete(request, id, {}, '{}:index', {{}}, None)\n".format(model_name, app_name)]
+
+    # table 내 데이터를 csv로 다운로드 합니다.
+    download_lines = [
+        "\ndef download(request):\n",
+        "\t# Fixme 아래 코드는 모든 DB정보를 가져옵니다. 지정된 대상 정보만 가져오고 싶을시 아래 코드를 수정하세요. \n",
+        "\tobjects = {}.objects.all()\n".format(model_name),
+        "\tform_additional_info = {} # 새로운 열(column) 추가하세요. \n",
+        "\tform_class = {}IndexForm \n".format(model_name),
+        "\tform_inst = form_class()\n",
+        # 데이터(row)가 존재하지 않을시에 다운로드 할수 없다는 메시지를 보냄
+        "\tif not objects:\n",
+        "\t\tdef _callback(**kwargs):\n",
+        "\t\t\terror_html = '<p> 다운로드 할 데이터가 존재하지 않습니다.</p>'\n",
+        "\t\t\tkwargs['added_contents'].append(error_html)\n",
+        "\t\t{}IndexForm.errors = ['인덱스']\n".format(model_name),
+        "\t\treturn standard_index(request, {}IndexForm, {{}}, None, '{}/', None, crud_formtable, _callback)\n".format(model_name, app_name),
+        "\tobject_df = generate_crud_df(objects, form_inst, form_additional_info)\n",
+
+        "\tdst_dir = './{}/static/{}'\n".format(app_name, app_name),
+        "\tfilename = '{}.csv'\n".format(app_name),
+        "\tdst_path = os.path.join(dst_dir, filename)\n".format(app_name),
+        "\tencoding = 'euc-kr'\n",
+        "\tobject_df.to_csv(dst_path, index=False, encoding=encoding, errors='ignore')\n\n\n",
+        "\treturn FileResponse(open(dst_path, 'rb'), as_attachment=True, filename=filename)\n"]
 
     # 코드 생성
     if crud:
-
-        lines = header_lines + index_lines + create_lines + detail_lines + update_lines + delete_lines
+        lines = header_lines + index_lines + create_lines + detail_lines + update_lines + delete_lines + download_lines
     else:
         header_lines.pop(2)
         lines = header_lines + index_lines
     return lines
+
 
 def write_view_base_code_lines(app_path, model_name, app_name, crud):
     with open(os.path.join(app_path, 'views.py'), 'w') as f:
@@ -128,14 +154,14 @@ def write_view_base_code_lines(app_path, model_name, app_name, crud):
 
 def generate_url_base_code_lines(model_name, app_name, crud):
     base_lines = ['from django.urls import path\n',
-                  'from {}.views import index, create, detail, update, delete\n'.format(app_name),
-                  'from {}.views import create, detail, update, delete\n'.format(app_name),
+                  'from {}.views import index, create, detail, update, delete, download\n'.format(app_name),
                   "app_name = '{}'\n".format(app_name),
                   "urlpatterns = [\n\tpath('create/', create, name='create'), ",
                   "\n\tpath('index/', index, name='index'), ",
-                  "\n\tpath('detail/<int:id>', detail, name='detail'), ",
-                  "\n\tpath('update/<int:id>', update, name='update'), ",
-                  "\n\tpath('delete/<int:id>', delete, name='delete')",
+                  "\n\tpath('detail/<int:id>', detail, name='detail'),",
+                  "\n\tpath('update/<int:id>', update, name='update'),",
+                  "\n\tpath('delete/<int:id>', delete, name='delete'),",
+                  "\n\tpath('download', download, name='download'),",
                   "\n\t]"]
     if not crud:
         base_lines.pop(2)
@@ -190,6 +216,7 @@ def write_model_base_code_lines_with_df(app_path, model_name, df):
         model_lines = generate_model_base_code_lines_with_df(model_name, df)
         f.writelines(model_lines)
 
+
 def generate_form_base_code(model_name, form_name, include_header=True):
     base_form_header_lines = ['from helper import apply_widget_by_field, get_all_field_info\n',
                               'from django import forms\n',
@@ -242,13 +269,14 @@ def write_form_base_code_lines(appdir_path, model_name, app_name, crud=True):
         form_lines = generate_form_base_code_lines(model_name, app_name, crud=crud)
         f.writelines(form_lines)
 
+
 def search(lines, str_):
     mask = [str_ in line for line in lines]
     index = list(np.where(mask)[0])
     return index
 
 
-def write_settings_base_code_lines(project_dir, project_name,  app_name, dependency):
+def write_settings_base_code_lines(project_dir, project_name, app_name, dependency):
     """
     settings.py 파일에 아래 단계를 수행합니다.
     1. app 추가

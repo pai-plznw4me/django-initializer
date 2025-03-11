@@ -1,8 +1,8 @@
 """
 File: helper.py
 Author: 김성중
-Version: 1.6
-Date: 2024-02-26
+Version: 1.7
+Date: 2024-03-11
 
 Description: 모든 앱에 공통적으로 사용되는 유틸 또는 헬퍼 func 들을 정의해 놓음.
 

@@ -14,9 +14,6 @@ from datetime import datetime
 
 base = 'doctris'
 
-
-
-
 def index(request):
     def _callback(**kwargs):
         pass;
@@ -146,5 +143,3 @@ def download(request):
 
 
     return FileResponse(open(dst_path, 'rb'), as_attachment=True, filename=filename)
-
-    return HttpResponse(200)

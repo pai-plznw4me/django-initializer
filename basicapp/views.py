@@ -74,6 +74,13 @@ def create(request):
             shutil.move(app_name, project_dir)
             appdir_path = os.path.join(project_dir, app_name)
 
+            # create folder
+            template_folder = os.path.join(appdir_path, 'templates', app_name)
+            static_folder = os.path.join(appdir_path, 'static', app_name)
+            os.makedirs(template_folder, exist_ok=True)
+            os.makedirs(static_folder, exist_ok=True)
+
+
             # app/models.py 파일 변경
             write_model_base_code_lines_with_df(appdir_path, db_table_name, datatable_df)
 
