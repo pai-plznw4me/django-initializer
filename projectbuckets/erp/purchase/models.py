@@ -1,6 +1,6 @@
 from django.db import models
 
-from bank.models import Bank
+from bankbook.models import Bankbook
 from card.models import Card
 from company.models import Company
 from department.models import Department
@@ -15,7 +15,7 @@ class Purchase(models.Model):
 	customer = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='거래처')
 	METHOD_CHOICES = (('카드', '카드'), ('계좌이체', '계좌이체'), ('현금', '현금'), ('기타', '기타'))
 	method = models.CharField(max_length=100, choices=METHOD_CHOICES)
-	customer_account = models.ForeignKey(Bank, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='이체계좌')
+	customer_account = models.ForeignKey(Bankbook, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='이체계좌')
 	card = models.ForeignKey(Card, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='사용카드')
 	project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='프로젝트')
 	employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='구매자')

@@ -6,26 +6,26 @@ from helper import h_tag, card_row, base_form_detail
 from django.http import HttpResponse, FileResponse
 from standard import standard_index, standard_detail, standard_create, standard_update, standard_delete
 from tables import crud_formtable, generate_crud_df
-
+base='doctris'
 def index(request):
 	def _callback(**kwargs):
 		pass;
-	return standard_index(request, PurchaseIndexForm, {}, None, 'purchase/', None, crud_formtable, None)
+	return standard_index(request, PurchaseIndexForm, {}, None, 'purchase/', base, crud_formtable, None,  table_id='employee_index_table', table_classes=('cell-border'))
 
 def create(request):
 	def _callback(**kwargs):
 		pass;
-	return standard_create(request, 'standard/create.html', PurchaseCreateForm, None, 'purchase:index', {}, None, None)
+	return standard_create(request, 'standard/create.html', PurchaseCreateForm, None, 'purchase:index', {}, base, None)
 
 def detail(request, id):
 	def _callback(**kwargs):
 		pass;
-	return standard_detail(request, id, 'standard/detail.html', PurchaseDetailForm, None, base_form_detail, None, None)
+	return standard_detail(request, id, 'standard/detail.html', PurchaseDetailForm, None, base_form_detail, base, None)
 
 def update(request, id):
 	def _callback(**kwargs):
 		pass;
-	return standard_update(request, id, 'standard/update.html', PurchaseUpdateForm, None, 'purchase:index', None, None, _callback)
+	return standard_update(request, id, 'standard/update.html', PurchaseUpdateForm, None, 'purchase:index', None, base, _callback)
 
 def delete(request, id):
 	return standard_delete(request, id, Purchase, 'purchase:index', {}, None)

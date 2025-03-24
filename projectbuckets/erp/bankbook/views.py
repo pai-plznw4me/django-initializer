@@ -13,7 +13,7 @@ from tables import crud_formtable, generate_crud_df
 def index(request):
 	def _callback(**kwargs):
 		pass;
-	return standard_index(request, BankbookIndexForm, {}, None, 'bankbook/', None, crud_formtable, None)
+	return standard_index(request, BankbookIndexForm, {}, None, 'bankbook/', None, crud_formtable, None,  table_id='employee_index_table', table_classes=('cell-border'))
 
 def create(request):
 	def _callback(**kwargs):

@@ -3,6 +3,7 @@ import os
 import pandas as pd
 from django.http import HttpResponse, FileResponse
 
+from department.models import Department
 from employee.forms import EmployeeIndexForm
 from employee.forms import EmployeeCreateForm, EmployeeUpdateForm, EmployeeDetailForm
 from employee.helper import generate_edu_info, generate_history_info, remove_invalid_characters
@@ -22,10 +23,12 @@ def index(request):
     # ⚠️ [0] 을 붙이는 이유는 최종 학력은 개인당 단 하나만 있음을 가정함
     # TODO: 이 행위를 하기보다는 최종학력을 저장하는게 좋을것 같다.
 
+    a = Employee.objects.exists()
     employees = Employee.objects.all()
     form_additional_info = {}
     # 직웝별 학력 정보를 생성해 반환합니다.
-    if employees:
+
+    if Employee.objects.count() != 0:
         edu_info = generate_edu_info(employees)
         history_info = generate_history_info(employees)
         form_additional_info = {**edu_info, **history_info}
@@ -95,13 +98,13 @@ def sync(request):
         resident_no = row.loc['생년월일(주민번호)']
         department = row.loc['부서']
         if department == '경영지원':
-            department = 'BS'
+            department = Department.objects.get(name='경영지원부')
         elif department == '기술개발':
-            department = 'TD'
+            department = Department.objects.get(name='기술개발부')
         elif department == '기획교육':
-            department = 'PME'
+            department = Department.objects.get(name='기획교육부')
         elif department == '영업':
-            department = 'SAL'
+            department = Department.objects.get(name='영업부')
         else:
             raise NotImplementedError
 

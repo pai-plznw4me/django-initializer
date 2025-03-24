@@ -63,7 +63,7 @@ def sync(request):
     df = pd.read_excel(filepath)
     for ind, (_, row) in enumerate(df.iterrows()):
         code, name, alias, start, end, size, customer = row.iloc[0], row.iloc[1], row.iloc[2], row.iloc[4], row.iloc[5], \
-            row.iloc[6], row.iloc[8]
+            row.iloc[6], row.iloc[7]
         # 날짜가 아니면 None 으로 변환
         if not isinstance(start, datetime):
             start=None
@@ -73,6 +73,7 @@ def sync(request):
         # 숫자가 아니면 None 으로 변환
         if not isinstance(size, int):
             size = None
+
         customer = Company.objects.get(name=customer)
         project = Project(code=code, name=name, alias=alias, start=start, end=end, size=size, state=state, customer=customer)
 

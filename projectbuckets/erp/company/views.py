@@ -40,7 +40,7 @@ def sync(request):
 	customers =[]
 	# 고객명이 중첩되지 않도록 집합 자료구조로 변환합니다.
 	for ind, row in df.iterrows():
-		customer = row.iloc[8]
+		customer = row.iloc[7]
 		customers.append(customer)
 	customers = list(set(customers))
 
