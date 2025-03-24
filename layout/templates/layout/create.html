@@ -1,0 +1,68 @@
+{% load static %}
+{% include 'layout/navi/index.html' %}
+
+
+<script >
+    $(document).ready(function () {
+        var table = $('#example').DataTable({
+            autoWidth: false
+        })
+
+
+        // 행 추가시 행 추가
+        $('#add-row').click(function () {
+            var newRowData = [
+                '<input type="checkbox" class="rowCheckbox">',
+                '<input class="form-control" type="text">',  // Name, side navi list 이름
+                '<input class="form-control" type="text">',  // URL
+                '<input class="form-control" type="text">'  // ICON
+            ];
+
+            // DataTable에 새로운 행 추가
+            table.row.add(newRowData).draw();
+        });
+
+        // 전체 선택 옵션
+        $('#select_all').click(function () {
+            const selectAllCheckbox = document.getElementById("select_all");
+            const checkboxes = document.querySelectorAll(".rowCheckbox");
+            console.log(checkboxes)
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        });
+
+        // 선택된 행 제거
+        $('#delete-row').click(function toggleRowSelection() {
+            var confirm_delete = window.confirm('정말로 선택된 행을 삭제하시겠습니까?');
+            if (confirm_delete) {
+                $('#example tbody tr').each(function () {
+                    var checkbox = $(this).find('.rowCheckbox');
+                    var row = table.row($(this));
+                    if (checkbox.prop('checked')) {
+                        row.remove('selected').draw();
+                    }
+                });
+            }
+        });
+
+        // 전송 버튼 누를시 작동되도록함
+        let table_array = [];
+        $('#submit_all').on('click', function () {
+            $('#example tbody tr').each(function () {
+                {# data table 내 모든 input field 의 value 을 구해 array 로 저장함#}
+                var name = $(this).find('td').eq(1).find('input').val()
+                var url = $(this).find('td').eq(2).find('input').val()
+                var icon = $(this).find('td').eq(3).find('input').val()
+                table_array.push({
+                    'name': name,
+                    'url': url,
+                    'icon': icon
+                })
+            })
+            $('#datatable_data').val(JSON.stringify(table_array));
+            $('#navitap').submit()
+        });
+
+    });
+</script>

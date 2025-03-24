@@ -23,10 +23,12 @@ def index(request):
     # TODO: 이 행위를 하기보다는 최종학력을 저장하는게 좋을것 같다.
 
     employees = Employee.objects.all()
+    form_additional_info = {}
     # 직웝별 학력 정보를 생성해 반환합니다.
-    edu_info = generate_edu_info(employees)
-    history_info = generate_history_info(employees)
-    form_additional_info = {**edu_info, **history_info}
+    if employees:
+        edu_info = generate_edu_info(employees)
+        history_info = generate_history_info(employees)
+        form_additional_info = {**edu_info, **history_info}
 
     def _callback(**kwargs):
         # 표 위에 헤더 정보 입니다.

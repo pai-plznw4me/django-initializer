@@ -1,4 +1,5 @@
 import os
+import os
 
 """
 Django settings for erp project.
@@ -37,6 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+'bankhistory' ,
+'bankbook' ,
+'card' ,
+'department' ,
+'purchase' ,
     'company' ,
     'project',
     'employee',
@@ -130,3 +136,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 AUTH_USER_MODEL = 'account.CustomUser'
 LOGIN_REDIRECT_URL = '/account/profile'  #
+DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 50
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 50
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'

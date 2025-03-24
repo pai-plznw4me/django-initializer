@@ -70,3 +70,14 @@ def write_urls_basicauth_default_codes(project_dir, project_name, app_name='acco
             lines.append("urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\n")
     with open(url_path, 'w') as f:
         f.writelines(lines)
+
+
+"""
+    url_path = os.path.join(project_dir, project_name, 'urls.py')
+    with open(url_path, 'r') as f:
+        lines = f.readlines()
+        index = search(lines, "path('admin/', admin.site.urls),")[0]
+        lines.insert(index + 1, "path('{}/', include('{}.urls'), name='{}'),\n".format(app_name, app_name, app_name))
+    with open(url_path, 'w') as f:
+        f.writelines(lines)
+"""

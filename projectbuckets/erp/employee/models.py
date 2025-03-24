@@ -1,4 +1,10 @@
+from tabnanny import verbose
+from tkinter.constants import CASCADE
+
 from django.db import models
+
+from bank.models import Bank
+from department.models import Department
 
 
 class Employee(models.Model):
@@ -24,10 +30,11 @@ class Employee(models.Model):
 
     level = models.CharField(max_length=20, verbose_name='직급', null=True, blank=True)
     resident_no = models.CharField(max_length=20, verbose_name='주민등록번호')
-    DEPARTMENT_CHOIDE = (('BS', '경영지원부'), ('TD', '기술개발부'), ('PME', '기획교육부'), ('SAL', '영업부'))
-    department = models.CharField(max_length=20, verbose_name='부서', choices=DEPARTMENT_CHOIDE)
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='부서')
     TYPE_CHOICE = (('full time', '정규직'), ('part time', '계약직'), ('freelancer', '프리랜서'))
     type = models.CharField(max_length=20, verbose_name='근로 계약 형식', choices=TYPE_CHOICE)
+    bank_account = models.ForeignKey(Bank, on_delete=models.SET_NULL, verbose_name='계좌', null=True, blank=True)
+
 
     def __str__(self):
         return self.name

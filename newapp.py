@@ -314,4 +314,4 @@ def write_settings_base_code_lines(project_dir, project_name, app_name, dependen
 
 
 if __name__ == '__main__':
-    new_app_install('initializer', 'basicapp')
+    new_app_install('initializer', 'layout')

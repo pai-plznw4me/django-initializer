@@ -485,6 +485,8 @@ def apply_datatable(table_id):
     </script>
     """
     # <!-orderable false 인 column 에 sorting arrow 을 보여주지 않는다. ->
+    # table 생성시 가장 왼쪽 열에 checkbox 을 생성한다.
+    # 클릭 하면 모든 checkbox 을 선택하고 삭제한다.
     sentence = """
     <script> var {} = new DataTable('#{}', {{
         autoWidth: false,

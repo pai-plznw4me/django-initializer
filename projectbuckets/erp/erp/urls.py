@@ -1,6 +1,9 @@
 from django.urls import include
 from django.conf.urls.static import static
 from erp import settings
+from django.urls import include
+from django.conf.urls.static import static
+from erp import settings
 
 """
 URL configuration for erp project.
@@ -25,6 +28,11 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+path('bankhistory/', include('bankhistory.urls'), name='bankhistory'),
+path('bankbook/', include('bankbook.urls'), name='bankbook'),
+path('card/', include('card.urls'), name='card'),
+path('department/', include('department.urls'), name='department'),
+path('purchase/', include('purchase.urls'), name='purchase'),
     path('company/', include('company.urls'), name='company'),
     path('project/', include('project.urls'), name='project'),
     path('employee/', include('employee.urls'), name='employee'),
@@ -34,4 +42,5 @@ urlpatterns = [
     path('account/', include('django.contrib.auth.urls')),
     path('doctris_base/', include('doctris_base.urls'), name='doctris_base'),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

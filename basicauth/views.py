@@ -58,6 +58,7 @@ def create(request):
 
 			# project/settings.py 파일 내 필수 코드를 생성합니다.
 			write_settings_basicauth_default_codes(project_dir, proj_name)
+
 			# project/urls.py 파일 내 필수 코드를 생성합니다.
 			write_urls_basicauth_default_codes(project_dir, proj_name)
 

@@ -364,8 +364,10 @@ def crud_formtable(base_url, objects, form_class, form_additional_info, url_path
     """
     # form instance 생성
     form_inst = form_class()
-
-    table_columns = form_inst.verbose_names + list(form_additional_info.keys()) + ['상세', '업데이트', '제거']
+    if form_additional_info:
+        table_columns = form_inst.verbose_names + list(form_additional_info.keys()) + ['상세', '업데이트', '제거']
+    else :
+        table_columns = form_inst.verbose_names + ['상세', '업데이트', '제거']
 
     # 모델 인스턴스 => DataFrame
     if objects:  # 테이블 내 instance 존재 시 아래 코드 수행
