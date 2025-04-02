@@ -1,9 +1,9 @@
 """
 File: tables.py
 Author: 김성중
-Version: 1.6
-Date: 2025-03-11
-Description: 모든 앱에 공통적으로 사용되는 유틸 또는 헬퍼 func 들을 정의해 놓음.
+Version: 1.7
+Date: 2025-03-30
+Description: crud_formtable 에 upload , download 기능을 붙일수 있게 해둠
 """
 
 import os
@@ -350,7 +350,7 @@ def generate_crud_df(objects, form_inst, form_additional_info):
             table_columns = table_columns + [key]
     return object_df
 
-def crud_formtable(base_url, objects, form_class, form_additional_info, url_path, **kwargs):
+def  crud_formtable(base_url, objects, form_class, form_additional_info, url_path, **kwargs):
     """
     form 정보를 기반으로 html table 을 생성해 반환합니다.
 
@@ -376,7 +376,7 @@ def crud_formtable(base_url, objects, form_class, form_additional_info, url_path
         object_df = generate_crud_df(objects, form_inst, form_additional_info)
 
         # detail button (read)
-        append_onclick_button('detail', object_df, os.path.join(base_url, url_path) + 'detail', )
+        append_onclick_button('detail', object_df, os.path.join(base_url, url_path) + 'detail')
 
         # generate update urls, (update)
         append_onclick_button('update', object_df, os.path.join(base_url, url_path) + 'update')
@@ -418,15 +418,21 @@ def crud_formtable(base_url, objects, form_class, form_additional_info, url_path
     # create button
     url = generate_url(base_url, os.path.join(url_path) + 'create')
     create_button_tag = create_button(url, 'create')
+    crud_table = create_button_tag
 
     # download button
-    url = generate_url(base_url, os.path.join(url_path) + 'download')
-    download_button_tag = create_button(url, 'download')
+    if kwargs.pop("table_download", []):
+        url = generate_url(base_url, os.path.join(url_path) + 'download')
+        download_button_tag = create_button(url, 'download')
+        crud_table += download_button_tag + '<p></p>' + table_html
 
+    # upload button
+    if kwargs.pop("table_upload", []):
+        url = generate_url(base_url, os.path.join(url_path) + 'upload')
+        upload_button_tag = create_button(url, 'upload')
+        crud_table += upload_button_tag + '<p></p>'
 
-    # p tag 을 넣어서 button 과 table 을 분리 시킨다
-    crud_table = create_button_tag + download_button_tag + '<p></p>' + table_html
-
+    crud_table += table_html
     # apply datatable
     if table_id:
         crud_table += apply_datatable(table_id)
