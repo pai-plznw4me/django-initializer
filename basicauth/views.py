@@ -1,4 +1,7 @@
 import os.path
+
+from django.views.decorators.csrf import csrf_exempt
+
 from basicauth.forms import BasicauthIndexForm
 from basicauth.forms import BasicauthCreateForm, BasicauthUpdateForm, BasicauthDetailForm
 from basicauth.helper import write_settings_basicauth_default_codes, write_urls_basicauth_default_codes
@@ -32,6 +35,7 @@ def index(request):
 
 	return standard_index(request, BasicauthIndexForm, {}, None, 'basicauth/', 'doctris', crud_formtable, _callback, table_id='basicauth_index_table', table_classes=('cell-border'))
 
+@csrf_exempt
 def create(request):
 
 	def _callback(**kwargs):

@@ -34,7 +34,8 @@
     <!-- datatables 1.x,x-->
     {#    <link rel="stylesheet" type="text/css" href="{% static 'doctris_base/css/jquery.dataTables.min.css' %}">#}
     <!-- datatables 2.x,x-->
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
+    <link href="{% static 'doctris_base/css/dataTables.dataTables.css' %}" rel="stylesheet" type="text/css"/>
+    {#     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" /> #}
 
 </head>
 
@@ -51,9 +52,12 @@
 <!-- select3 -->
 <!-- Icons -->
 <script src="{% static 'doctris_base/js/feather.min.js' %}" ></script>
+
 <!-- Datatable Js -->
 {#<script src="{% static 'doctris_base/js/jquery.dataTables.js' %}"></script>#}
-<script src="https://cdn.datatables.net/2.2.2/js/dataTables.js" ></script>
+{#<script src="https://cdn.datatables.net/2.2.2/js/dataTables.js" ></script>#}
+<script src="{% static 'doctris_base/js/dataTables.js' %}" ></script>
+
 {#<!-- global Js -->#}
 <script src="{% static 'doctris_base/js/global.js' %}" ></script>
 <!-- Chart Js -->

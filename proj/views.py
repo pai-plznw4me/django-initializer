@@ -1,6 +1,7 @@
 import os.path
 
 from django.http import FileResponse
+from django.views.decorators.csrf import csrf_exempt
 from setuptools.compat.py311 import shutil_rmtree
 
 from initializer.settings import PROJECT_DIR, MEDIA_URL
@@ -25,7 +26,7 @@ def index(request):
 
     return standard_index(request, ProjIndexForm, {}, None, 'proj/', base, crud_formtable, _callback, table_id='proj_index', table_classes=('cell-border'))
 
-
+@csrf_exempt
 def create(request):
     def _callback(**kwargs):
         if kwargs['request'].method == 'POST' and kwargs['form'].is_valid():
@@ -61,7 +62,7 @@ def update(request, id):
     return standard_update(request, id, 'standard/update.html', ProjUpdateForm, None, 'proj:index', None, base,
                            _callback)
 
-
+@csrf_exempt
 def delete(request, id):
     # callback(request=request, id=id, model=model, redirect_view=redirect_view,
     # 		 redirect_path_variables=redirect_path_variables, instance=instance, **callback_kwargs)

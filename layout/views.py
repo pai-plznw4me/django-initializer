@@ -14,7 +14,7 @@ from django.http import HttpResponse, FileResponse
 from standard import standard_index, standard_detail, standard_create, standard_update, standard_delete
 from tables import crud_formtable, generate_crud_df
 from proj.models import Proj
-from initializer.settings import PROJECT_DIR
+from initializer.settings import PROJECT_DIR, MEDIA_ROOT
 from os.path import abspath, exists
 
 base = 'doctris'
@@ -62,23 +62,27 @@ def create(request):
 			# project/urls.py 파일 내 필수 코드를 생성합니다.
 			write_urls_layout_default_codes(project_dir, proj_name, app_name=layout_name)
 
-			# app dir
+			# app dir을 생성합니다.
 			app_dir = abspath(os.path.join(PROJECT_DIR, proj_name, layout_name))
 			image_dir = os.path.join(app_dir, 'static', layout_name, 'images')
 
 			valid_inst = kwargs['valid_inst']
 
-			# favicon 정보 변경
-			ext = os.path.splitext(valid_inst.favicon.path)[-1]
-			favicon_name = 'favicon{}'.format(ext)
-			dst =  os.path.join(image_dir, favicon_name)
-			src = valid_inst.favicon.path
+			# 지정된 파일 저장
+			from django.core.files.storage import default_storage
+			favicon_path = default_storage.save(f"images/{favicon.name}", favicon)
+			logo_path = default_storage.save(f"images/{logo.name}", logo)
+
+			# favicon 파일 저장(media)
+			dst =  os.path.join(image_dir, favicon.name)
+			src = default_storage.save(f"{favicon.name}", favicon)
+			src = os.path.join(MEDIA_ROOT, src)
 			shutil.copy(src, dst)
 
 			# logo 정보 변경
-			logo_name = 'logo{}'.format(ext)
-			dst =  os.path.join(image_dir, logo_name)
-			src = valid_inst.logo.path
+			dst =  os.path.join(image_dir, logo.name)
+			src = default_storage.save(f"{logo.name}", logo)
+			src = os.path.join(MEDIA_ROOT, src)
 			shutil.copy(src, dst)
 
 			# side navi 정보 변경
@@ -102,7 +106,7 @@ def create(request):
 				lines = f.readlines()
 			target_html = "  <link rel=\"shortcut icon\" type=\"image/x-icon\" href=\"{% static \'doctris_base/images/{# fixme #}\' %}\">"
 			index = search(lines, target_html)[0]
-			lines[index] = target_html.replace('{# fixme #}', favicon_name)
+			lines[index] = target_html.replace('{# fixme #}', favicon.name)
 			with open(target_path, 'w') as f:
 				f.writelines(lines)
 
@@ -115,7 +119,7 @@ def create(request):
 				lines = f.readlines()
 			target_html = "<img alt=\"\" class=\"logo-light-mode\" height=\"28\" src=\"{% static 'doctris_base/images/{# fixme #}' %}\"/>"
 			index = search(lines, target_html)[0]
-			lines[index] = target_html.replace('{# fixme #}', logo_name)
+			lines[index] = target_html.replace('{# fixme #}', logo.name)
 			with open(target_path, 'w') as f:
 				f.writelines(lines)
 			pass
